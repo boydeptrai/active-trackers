@@ -1,12 +1,16 @@
 <template>
-  <header>
-    <nav class="bg-at-light-green text-white">
-      <div class="container py-5 px-4 flex flex-col items-center gap-4 sm:flex-row">
+  <header class="bg-at-light-green text-white">
+    <nav class="container py-5 px-4 flex flex-col items-center gap-4 sm:flex-row" >
         <div class="flex items-center gap-x-4">
           <img src="../assets/images/dumbbell-light.png" class="w-14" alt="">
           <h1 class="text-lg">Active Tracker</h1>
         </div>
-      </div>
+        <ul class="flex flex-1 justify-end gap-x-10">
+          <router-link class="cursor-pointer " :to="{name: 'Home'}">Home</router-link>
+          <router-link class="cursor-pointer " :to="{name: ''}">Create</router-link>
+          <router-link class="cursor-pointer " :to="{name: 'Login'}">Login</router-link>
+          <li class="cursor-pointer">Logout</li>
+        </ul>
     </nav>
   </header>
 </template>

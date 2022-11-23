@@ -26,7 +26,7 @@
           >Password</label
         >
         <input
-          type="text"
+          type="password"
           required
           class="p-2 to-gray-500 focus:outline-none"
           id="password"
@@ -39,7 +39,7 @@
           >confirmPassword</label
         >
         <input
-          type="text"
+          type="password"
           required
           class="p-2 to-gray-500 focus:outline-none"
           id="confirmPassword"

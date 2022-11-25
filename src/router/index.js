@@ -10,21 +10,37 @@ const routes = [
     path: "/",
     name: "Home",
     component: Home,
+    meta: {
+      title: "Home",
+      auth: false,
+    },
   },
   {
     path: "/login",
     name: "Login",
     component: Login,
+    meta: {
+      title: "Login",
+      auth: false,
+    },
   },
   {
     path: "/register",
     name: "Register",
     component: Register,
+    meta: {
+      title: "Register",
+      auth: false,
+    },
   },
   {
     path: "/create",
     name: "Create",
     component: Create,
+    meta: {
+      title: "Create",
+      auth: false,
+    },
   },
   {
     path: "/view-workout/:workoutId",

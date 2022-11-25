@@ -26,6 +26,7 @@
             />
           </div>
           <div
+            @click="deleteWorkout"
             class="h-7 w-7 rounded-full flex justify-center items-center cursor-pointer bg-at-light-green shadow-lg"
           >
             <img
@@ -132,6 +133,7 @@
               <p v-else>{{ item.weight }}</p>
             </div>
             <img
+              @click="deleteExercise(item.id)"
               v-if="edit"
               class="absolute h-4 w-auto -left-5 cursor-pointer"
               src="../assets/images/trash-light-green.png"
@@ -139,6 +141,7 @@
             />
           </div>
           <button
+            @click="addExercise"
             v-if="edit"
             type="button"
             class="py-2 px-6 rounded-sm self-start text-sm text-white bg-at-light-green duration-200 border-solid border-2 border-transparent hover:border-at-light-green hover:bg-white hover:text-at-light-green"
@@ -211,6 +214,7 @@
               <p v-else>{{ item.pace }}</p>
             </div>
             <img
+              @click="deleteExercise(item.id)"
               v-if="edit"
               class="absolute h-4 w-auto -left-5 cursor-pointer"
               src="../assets/images/trash-light-green.png"
@@ -218,6 +222,7 @@
             />
           </div>
           <button
+            @click="addExercise"
             v-if="edit"
             type="button"
             class="py-2 px-6 rounded-sm self-start text-sm text-white bg-at-light-green duration-200 border-solid border-2 border-transparent hover:border-at-light-green hover:bg-white hover:text-at-light-green"
@@ -230,7 +235,8 @@
       <!-- Update  -->
       <button
         v-if="edit"
-        type="submit"
+        @click="update"
+        type="button"
         class="mt-10 py-2 px-6 rounded-sm self-start text-sm text-white bg-at-light-green duration-200 border-solid border-2 border-transparent hover:border-at-light-green hover:bg-white hover:text-at-light-green"
       >
         Update Workout
@@ -242,12 +248,14 @@
 <script>
 import { ref, computed } from "vue";
 import { supabase } from "../supabase/init";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import store from "../store";
+import {uid} from 'uid'
 export default {
   name: "view-workout",
   setup() {
     // Create data / vars
+    const router = useRouter();
     const route = useRoute();
     const data = ref(null);
     const dataLoaded = ref(null);
@@ -277,19 +285,93 @@ export default {
     };
     getData();
     // Delete workout
-
+    const deleteWorkout = async () => {
+      try {
+        const { error } = await supabase
+          .from("workouts")
+          .delete()
+          .eq("id", currentId);
+        if (error) throw error;
+        router.push({ name: "Home" });
+      } catch (error) {
+        errorMsg.value = `Error: ${error.message}`;
+        setTimeout(() => {
+          errorMsg.value = false;
+        });
+      }
+    };
     // Edit mode
     const edit = ref(null);
     const editMode = () => {
       edit.value = !edit.value;
     };
     // Add exercise
-
+    const addExercise = () => {
+      if (data.value.workoutType === "strength") {
+        data.value.exercises.push({
+          id: uid(),
+          exercise: "",
+          sets: "",
+          reps: "",
+          weight: "",
+        });
+        return;
+      }
+      data.value.exercises.push({
+        id: uid(),
+        cardioType: "",
+        distance: "",
+        duration: "",
+        pace: "",
+      });
+    };
     // Delete exercise
-
+    const deleteExercise = (id) => {
+      if (data.value.exercises.length > 1) {
+        data.value.exercises = data.value.exercises.filter(
+          (exercise) => exercise.id !== id
+        );
+        return;
+      }
+      errorMsg.value =
+        "Error: Cannot remove, need to at least have one exercise";
+      setTimeout(() => {
+        errorMsg.value = false;
+      }, 5000);
+    };
     // Update Workout
-
-    return { data, dataLoaded, errorMsg, statusMsg, edit, editMode, user };
+    const update = async () =>{
+      try {
+        const {error} = await supabase.from('workouts').update({
+          workoutName: data.value.workoutName,
+          exercises: data.value.exercises
+        }).eq('id',currentId);
+        if (error) throw error
+        edit.value = false;
+        statusMsg.value = "Success: Workout Updated!";
+        setTimeout(() =>{
+          statusMsg.value = false
+        },5000)
+      } catch (error) {
+        errorMsg.value = `Error: ${error.message}`;
+        setTimeout(() =>{
+          errorMsg.value = false
+        },5000)
+      }
+    }
+    return {
+      data,
+      dataLoaded,
+      errorMsg,
+      statusMsg,
+      edit,
+      editMode,
+      user,
+      deleteWorkout,
+      addExercise,
+      deleteExercise,
+      update
+    };
   },
 };
 </script>
